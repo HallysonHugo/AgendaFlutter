@@ -10,6 +10,6 @@ class AppModule extends Module {
 
   @override
   final List<ModularRoute> routes = [
-    ModuleRoute(LoginModule.routeName, module: LoginModule())
+    ModuleRoute(LoginModule.routeName, module: LoginModule()),
   ];
 }

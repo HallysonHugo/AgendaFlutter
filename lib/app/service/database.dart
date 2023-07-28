@@ -1,14 +1,11 @@
-import 'package:isar/isar.dart';
-import 'package:uex/app/modules/contact/model/contact_model.dart';
-import 'package:uex/app/modules/login/model/login_model.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class Database{
-  final Isar isar = Isar.getInstance()!;
+class Database<T>{
 
-  Future<void> init() async{
-    await Isar.open([
-      LoginModelSchema,
-      ContactModelSchema
-    ], directory: '');
-  }
+  static const int loginHiveTypeId = 0;
+  static const int contactHiveTypeId = 1;
+
+  Future<Box<T>> get box async => Hive.isBoxOpen(T.runtimeType.toString()) ? 
+    Hive.box<T>(T.runtimeType.toString()) : 
+    await Hive.openBox<T>(T.runtimeType.toString());
 }
