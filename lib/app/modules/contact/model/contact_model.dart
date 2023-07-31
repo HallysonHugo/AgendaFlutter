@@ -13,11 +13,12 @@ class ContactModel extends HiveObject{
   String cpf;
 
   @HiveField(2)
-  String email;
-
-
-  @HiveField(3)
   AddressModel address = AddressModel();
 
-  ContactModel({required this.name, required this.cpf, required this.email, required this.address});
+  @HiveField(3)
+  String telefone;
+
+  bool selected = false;
+
+  ContactModel({required this.name, required this.cpf, required this.address, required this.telefone});
 }

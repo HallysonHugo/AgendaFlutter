@@ -12,9 +12,22 @@ abstract class LoginControllerBase with Store {
   final LoginRepository repository;
   LoginControllerBase({required this.repository});
 
+  @observable
+  bool isLoginPasswordVisible = true;
+
+  @observable
+  bool isSignupPasswordVisible = true;
+
+
+
+
   Future<void>signup({required String email, required String password}) async{
     try{
-      final LoginModel loginModel = LoginModel(email: email, password: password);
+      final String lowerCaseEmail = email.trim().toLowerCase();
+      if(!lowerCaseEmail.contains('@')){
+        throw 'Email inválido';
+      }
+      final LoginModel loginModel = LoginModel(email: lowerCaseEmail, password: password);
       await repository.signup(loginModel: loginModel);
     }
     catch(e){

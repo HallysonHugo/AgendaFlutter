@@ -19,8 +19,8 @@ class ContactModelAdapter extends TypeAdapter<ContactModel> {
     return ContactModel(
       name: fields[0] as String,
       cpf: fields[1] as String,
-      email: fields[2] as String,
-      address: fields[3] as AddressModel,
+      address: fields[2] as AddressModel,
+      telefone: fields[3] as String,
     );
   }
 
@@ -33,9 +33,9 @@ class ContactModelAdapter extends TypeAdapter<ContactModel> {
       ..writeByte(1)
       ..write(obj.cpf)
       ..writeByte(2)
-      ..write(obj.email)
+      ..write(obj.address)
       ..writeByte(3)
-      ..write(obj.address);
+      ..write(obj.telefone);
   }
 
   @override
