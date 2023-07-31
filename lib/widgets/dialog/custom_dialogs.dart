@@ -20,4 +20,22 @@ class CustomDialog{
       )
     );
   }
+
+  static sucessDialog({required BuildContext context, required String message, String title = 'Sucesso'}){
+    return showDialog(
+      context: context, 
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: (){
+              Modular.to.pop();
+            }, 
+            child: const Text('Ok')
+          )
+        ],
+      )
+    );
+  }
 }

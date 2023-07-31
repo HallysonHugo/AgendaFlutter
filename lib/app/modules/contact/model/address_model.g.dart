@@ -24,13 +24,14 @@ class AddressModelAdapter extends TypeAdapter<AddressModel> {
       ..complemento = fields[4] as String
       ..bairro = fields[5] as String
       ..cidade = fields[6] as String
-      ..uf = fields[7] as String;
+      ..uf = fields[7] as String
+      ..numero = fields[8] as String;
   }
 
   @override
   void write(BinaryWriter writer, AddressModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.latitude)
       ..writeByte(1)
@@ -46,7 +47,9 @@ class AddressModelAdapter extends TypeAdapter<AddressModel> {
       ..writeByte(6)
       ..write(obj.cidade)
       ..writeByte(7)
-      ..write(obj.uf);
+      ..write(obj.uf)
+      ..writeByte(8)
+      ..write(obj.numero);
   }
 
   @override

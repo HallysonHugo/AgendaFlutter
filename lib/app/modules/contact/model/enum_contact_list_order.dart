@@ -1,0 +1,4 @@
+enum ContactListOrder{
+  asc,
+  dsc
+}

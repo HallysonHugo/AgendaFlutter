@@ -29,6 +29,9 @@ class AddressModel{
 
   @HiveField(7)
   String uf = '';
+
+  @HiveField(8)
+  String numero = '';
   
 
   AddressModel();

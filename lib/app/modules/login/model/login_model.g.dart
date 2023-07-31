@@ -18,6 +18,7 @@ class LoginModelAdapter extends TypeAdapter<LoginModel> {
     };
     return LoginModel(
       email: fields[0] as String,
+      password: fields[2] as String,
     );
   }
 
@@ -28,7 +29,7 @@ class LoginModelAdapter extends TypeAdapter<LoginModel> {
       ..writeByte(0)
       ..write(obj.email)
       ..writeByte(2)
-      ..write(obj.encriptedPassword);
+      ..write(obj.password);
   }
 
   @override

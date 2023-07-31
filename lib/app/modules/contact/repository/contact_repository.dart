@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:geocoder_buddy/geocoder_buddy.dart';
 import 'package:uex/app/modules/contact/model/address_model.dart';
 import 'package:uex/app/modules/contact/model/contact_model.dart';
 import 'package:uex/app/service/custom_dio.dart';
@@ -27,11 +28,10 @@ class ContactRepository{
     }
   }
 
-  Future getListAddresses({required String search})async{
+  Future<List<GBSearchData>> getListAddresses({required String search})async{
     try{
-      Response response = await dio.instance.get('https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$search&key=AIzaSyAEn5_CToVmCL6yEdr5XJNH59yq2wMUI0A&components=country:br');
-      print(response.data); 
-
+      final response = await GeocoderBuddy.query(search);
+      return response;
     }
     catch(e){
       rethrow;

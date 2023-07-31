@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:uex/app/controller/app_controller.dart';
 import 'package:uex/app/modules/contact/controller/contact_controller.dart';
 import 'package:uex/app/modules/contact/model/address_model.dart';
 import 'package:uex/widgets/dialog/custom_dialogs.dart';
-import 'package:uex/widgets/text_field/custom_address_field.dart';
 import 'package:uex/widgets/text_field/custom_text_field.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -22,6 +22,7 @@ class ListContactsPage extends StatefulWidget {
 class _ListContactsPageState extends State<ListContactsPage> {
   final TextEditingController _searchController = TextEditingController();
   final ContactController _contactController = Modular.get();
+  final AppController _appController = Modular.get();
 
   @override
   void initState() {
@@ -38,30 +39,51 @@ class _ListContactsPageState extends State<ListContactsPage> {
           Expanded(
             child: Column(
               children: [
-                CustomTextField(
-                  prefix: const Icon(Icons.search),
-                  margin: const EdgeInsets.all(5),
-                  controller: _searchController,
-                  label: const Text('Pesquisar Contato'),
-                  onChanged: (text){
-                    _contactController.searchContacts(search: text);
-                  },
+                Row(
+                  children: [
+                    Text('Seja bem vindo: ${_appController.loggedUser?.email}', style: Theme.of(context).textTheme.titleLarge),
+                    IconButton(onPressed: ()async{
+                      await _appController.deleteUser(context: context);
+                    }, icon: const Icon(Icons.delete, color: Colors.red,))
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        prefix: const Icon(Icons.search),
+                        margin: const EdgeInsets.all(5),
+                        controller: _searchController,
+                        label: const Text('Pesquisar Contato'),
+                        onChanged: (text){
+                          _contactController.searchContacts(search: text);
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: (){
+                        _contactController.orderContacts();
+                        setState(() {});
+                      }, 
+                      icon: const Icon(Icons.import_export, color: Colors.blue,))
+                  ],
                 ),
                 Row(
                   children: [
                     Expanded(
                       child: Container(
                         height: 35,
-                        margin: const EdgeInsets.only(left:20, right: 20),
+                        margin: const EdgeInsets.only(left:5, right: 45),
                         child: ElevatedButton(
                           onPressed: ()async{
                             final TextEditingController nameController = TextEditingController();
                             final TextEditingController phoneController = TextEditingController();
                             final TextEditingController cpfController = TextEditingController();
                             final TextEditingController cepController = TextEditingController();
-                            final TextEditingController bairroController = TextEditingController();
-                            final TextEditingController logradouroController = TextEditingController();
+                            final TextEditingController numeroController = TextEditingController();
                             final TextEditingController addressController = TextEditingController();
+                            final TextEditingController complementoController = TextEditingController();
                             AddressModel addressModel = AddressModel();
 
                             await showDialog(context: context, builder: (context){
@@ -100,72 +122,50 @@ class _ListContactsPageState extends State<ListContactsPage> {
                                         margin: const EdgeInsets.only(left: 40, right: 40),
                                       ),
                                       const SizedBox(height: 10),
+                                      CustomTextField(
+                                        onChanged: (text)async{
+                                          if(text.length == 10){
+                                            addressModel = await _contactController.getAddress(cep: text);
+                                            addressController.text = '${addressModel.logradouro}, ${addressModel.bairro}. ${addressModel.cidade} - ${addressModel.uf}';
+                                          }
+                                      },
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        CepInputFormatter(),
+                                      ],
+                                      controller: cepController,
+                                      label: const Text('CEP'),
+                                      margin: const EdgeInsets.only(left: 40, right: 40),
+                                      ),
+                                      const SizedBox(height: 10),
                                       Row(
                                         children: [
                                           Expanded(
-                                            child: CustomTypeAhead<AddressModel>(
+                                            child: CustomTextField(
                                               controller: addressController,
+                                              enabled: false,
                                               label: const Text('Endereço'),
                                               margin: const EdgeInsets.only(left: 40, right: 5),
-                                              itemBuilder: (context, AddressModel addressModel){
-                                                return ListTile(
-                                                  title: Text(addressModel.logradouro),
-                                                  subtitle: Text(addressModel.bairro),
-                                                );
-                                              },
-                                              suggestionsCallback: (search)async{
-                                                return await _contactController.getListAddresses(search: search);
-                                              },
-                                              onSuggestionSelected: (AddressModel addressModel){
-                                                cepController.text = addressModel.cep;
-                                                bairroController.text = addressModel.bairro;
-                                                logradouroController.text = addressModel.logradouro;
-                                              },
-                                            )
+                                            ),
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context).size.width * 0.1,
                                             child: CustomTextField(
-                                            onChanged: (text)async{
-                                              if(text.length == 10){
-                                                addressModel = await _contactController.getAddress(cep: text);
-                                                bairroController.text = addressModel.bairro;
-                                                logradouroController.text = addressModel.logradouro;
-                                              }
-                                            },
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter.digitsOnly,
-                                              CepInputFormatter(),
-                                            ],
-                                            controller: cepController,
-                                            label: const Text('CEP'),
-                                            margin: const EdgeInsets.only(left: 5, right: 40),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: CustomTextField(
-                                              controller: logradouroController,
-                                              label: const Text('Logradouro'),
-                                              margin: const EdgeInsets.only(left: 40, right: 5),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: CustomTextField(
-                                              controller: bairroController,
-                                              label: const Text('Bairro'),
+                                              controller: numeroController,
+                                              label: const Text('Número'),
                                               margin: const EdgeInsets.only(left: 5, right: 40),
+                                          
                                             ),
-                                          ),
+                                          )
                                         ],
                                       ),
-                                      const SizedBox(height: 20),
+                                      const SizedBox(height: 10),
+                                      CustomTextField(
+                                        controller: complementoController,
+                                        label: const Text('Complemento'),
+                                        margin: const EdgeInsets.only(left: 40, right: 40),
+                                      ),
+                                      const SizedBox(height: 10),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                                         children: [
@@ -178,13 +178,32 @@ class _ListContactsPageState extends State<ListContactsPage> {
                                           ElevatedButton(
                                             onPressed: ()async{
                                               try{
+                                                _contactController.validations(
+                                                  endereco: addressController.text,
+                                                  name: nameController.text, 
+                                                  cpf: cpfController.text, 
+                                                  phone: phoneController.text, 
+                                                  cep: cepController.text, 
+                                                  numero: numeroController.text
+                                                );
+                                                String finalAddress = '${addressModel.logradouro} ${numeroController.text} ${addressModel.bairro} ${addressModel.cidade} ${addressModel.uf}';
+                                                final addressLatLng = await _contactController.getListAddresses(search: finalAddress);
+                                                addressModel.latitude = addressLatLng.first.lat;
+                                                addressModel.longitude = addressLatLng.first.lon;
+                                                addressModel.complemento = complementoController.text;  
+                                                addressModel.numero = numeroController.text;
                                                 await _contactController.saveContacts(
                                                   telefone: phoneController.text,
                                                   name: nameController.text, 
                                                   cpf: cpfController.text, 
                                                   address: addressModel
-                                                );
+                                                ).then((value) async{
+                                                  await CustomDialog.sucessDialog(context: context, message: 'Contato salvo com sucesso');
+                                                });
                                                 Modular.to.pop();
+                                              }
+                                              on StateError{
+                                                CustomDialog.errorDialog(context: context, error: 'Endereço não encontrado');
                                               }
                                               catch(e){
                                                 CustomDialog.errorDialog(context: context, error: e.toString());
@@ -222,13 +241,8 @@ class _ListContactsPageState extends State<ListContactsPage> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: (){
-                              for (var element in _contactController.contacts) {
-                                if(element != _contactController.contacts[index]){
-                                  element.selected = false;
-                                  }
-                                }
-                                _contactController.contacts[index].selected = true;
-                                setState((){});
+                              _contactController.markContact(contact: _contactController.contacts[index]);
+                              setState((){});
                             },
                             child: Container(
                               padding: const EdgeInsets.all(5),
@@ -282,6 +296,7 @@ class _ListContactsPageState extends State<ListContactsPage> {
                                                       ElevatedButton(
                                                         onPressed: ()async{
                                                           await _contactController.deleteContact(contactModel: _contactController.contacts[index]);
+                                                          _contactController.markers.removeWhere((element) => element.markerId.value == _contactController.contacts[index].cpf);
                                                           Modular.to.pop();
                                                         }, 
                                                         child: const Text('Excluir'),
@@ -312,12 +327,18 @@ class _ListContactsPageState extends State<ListContactsPage> {
             child: PointerInterceptor(
               intercepting: true,
               child: GoogleMap(
+                markers: _contactController.markers,
                 mapType: MapType.normal,
-                initialCameraPosition: const CameraPosition(
+                initialCameraPosition: _contactController.contacts.isEmpty ? const CameraPosition(
                   target: LatLng(-23.563090, -46.656900),
                   zoom: 14.4746,
+                ) : CameraPosition(
+                  target: LatLng(double.parse(_contactController.contacts.first.address.latitude), double.parse(_contactController.contacts.first.address.longitude)),
+                  zoom: 14.4746,
                 ),
-                onMapCreated: (GoogleMapController controller){},
+                onMapCreated: (GoogleMapController controller){
+                  _contactController.mapController = controller;
+                },
               ), 
             ),
           )

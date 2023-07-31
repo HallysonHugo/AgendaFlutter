@@ -22,7 +22,7 @@ class LoginRepository{
       }
       LoginModel loginDatabase = loginBox.values.firstWhere((element) => 
       element.email.trim().toLowerCase() == loginModel.email.trim().toLowerCase());
-      if(loginDatabase.encriptedPassword != loginModel.encriptedPassword){
+      if(loginDatabase.password != loginModel.password){
         throw 'Senha incorreta';
       }
       return loginDatabase;

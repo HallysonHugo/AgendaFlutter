@@ -15,22 +15,25 @@ class CustomTypeAhead<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadField(
-      suggestionsCallback: suggestionsCallback, 
-      itemBuilder: itemBuilder, 
-      onSuggestionSelected: onSuggestionSelected,
-      hideOnEmpty: true,
-      hideOnError: false,
-      getImmediateSuggestions: false,
-      hideSuggestionsOnKeyboardHide: false,
-      autoFlipDirection: true,
-      textFieldConfiguration: TextFieldConfiguration(
-        controller: controller,
-        decoration: InputDecoration(
-          suffixIcon: suffixIcon,
-          prefixIcon: prefix,
-          label: label,
-          border: const OutlineInputBorder(),
+    return Container(
+      margin: margin,
+      child: TypeAheadField(
+        suggestionsCallback: suggestionsCallback, 
+        itemBuilder: itemBuilder, 
+        onSuggestionSelected: onSuggestionSelected,
+        hideOnEmpty: true,
+        hideOnError: false,
+        getImmediateSuggestions: false,
+        hideSuggestionsOnKeyboardHide: false,
+        autoFlipDirection: true,
+        textFieldConfiguration: TextFieldConfiguration(
+          controller: controller,
+          decoration: InputDecoration(
+            suffixIcon: suffixIcon,
+            prefixIcon: prefix,
+            label: label,
+            border: const OutlineInputBorder(),
+          ),
         ),
       ),
     );

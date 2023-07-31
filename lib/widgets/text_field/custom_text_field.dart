@@ -12,14 +12,16 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
+  final bool enabled;
   const CustomTextField({super.key, this.margin, this.label, this.controller, this.onChanged, 
-    this.prefix, this.obscureText = false, this.suffixIcon, this.inputFormatters, this.keyboardType});
+    this.prefix, this.obscureText = false, this.suffixIcon, this.inputFormatters, this.keyboardType, this.enabled = true});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: margin,
       child: TextField(
+        enabled: enabled,
         obscureText: obscureText,
         onChanged: onChanged,
         inputFormatters: inputFormatters,
